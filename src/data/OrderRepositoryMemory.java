@@ -8,8 +8,9 @@ public class OrderRepositoryMemory implements OrderRepository{
     private final Map<Integer, Order> database = new HashMap<>();
 
     @Override
-    public void save(Order order) {
+    public Order save(Order order) {
         database.put(order.getId(), order);
+        return searchById(order.getId());
     }
 
     @Override
@@ -18,7 +19,7 @@ public class OrderRepositoryMemory implements OrderRepository{
     }
 
     @Override
-    public void listOrders() {
+    public void findAll() {
         List<Integer> orderedIds = new ArrayList<>(database.keySet());
 
         Collections.sort(orderedIds);
