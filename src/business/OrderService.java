@@ -27,6 +27,8 @@ public class OrderService {
         if(order.getProductList() == null || order.getProductList().isEmpty()){
             throw new IllegalArgumentException("El pedido no cuenta con productos.");
         }
+
+        validateProducts(order.getProductList());
     }
 
     public void validateProducts(List<Product> productList){
@@ -52,58 +54,38 @@ public class OrderService {
     }
 
     public Order registerOrder(Order order){
-        int orderId = order.getId();
-
         validateOrder(order);
-        validateProducts(order.getProductList());
 
-        calculateSubtotal(orderId);
-        calculateDiscount(orderId);
-        calculateTaxes(orderId);
-        calculateTotal(orderId);
-
+        processOrderCalculations(order);
         order.setOrderState(OrderState.PROCESSED);
-        orderRepository.save(order);
 
-        return orderRepository.searchById(orderId);
+        return orderRepository.save(order);
     }
 
     public void listOrders(){
-        System.out.println("Pedidos realizados:");
-        orderRepository.listOrders();
+        orderRepository.findAll();
     }
 
-    public void calculateSubtotal(int id){
-        Order order = searchOrder(id);
-        List<Product> productList = order.getProductList();
-
+    public void processOrderCalculations(Order order){
+        // Calcular subtotal
         BigDecimal subtotal = BigDecimal.ZERO;
-        for(Product product : productList){
-            subtotal = product.getPrice().multiply(BigDecimal.valueOf(product.getQuantity()));
+        for(Product product : order.getProductList()){
+            BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(product.getQuantity()));
+            subtotal = subtotal.add(itemTotal);
         }
-
         order.setSubtotal(subtotal);
-    }
 
-    public void calculateDiscount(int id){
-        Order order = searchOrder(id);
-        int amount = 1000;
-        BigDecimal decimalDiscount = BigDecimal.valueOf(0.1);
-
-        if(order.getSubtotal().compareTo(BigDecimal.valueOf(amount)) > 0){
-            order.setDiscount(order.getSubtotal().multiply(decimalDiscount));
+        // Calcular Descuento
+        if(order.getSubtotal().compareTo(BigDecimal.valueOf(1000)) > 0){
+            order.setDiscount(order.getSubtotal().multiply(BigDecimal.valueOf(0.1)));
         }
-    }
 
-    public void calculateTaxes(int id){
-        Order order = searchOrder(id);
-        double iva = 0.16;
+        // Calcular Impuestos
+        BigDecimal netAmount = order.getSubtotal().subtract(order.getDiscount());
+        BigDecimal taxes = netAmount.multiply(BigDecimal.valueOf(0.16));
+        order.setTaxes(taxes);
 
-        order.setTaxes(order.getSubtotal().subtract(order.getDiscount()).multiply(BigDecimal.valueOf(iva)));
-    }
-
-    public void calculateTotal(int id){
-        Order order = searchOrder(id);
-        order.setTotal(order.getSubtotal().subtract(order.getDiscount()).add(order.getTaxes()));
+        // Calcular Total
+        order.setTotal(netAmount.add(taxes));
     }
 }
