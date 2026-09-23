@@ -6,12 +6,14 @@ public class Product {
     private final int id;
     private final String name;
     private final BigDecimal price;
+    private final int quantity;
     private int stock;
 
-    public Product(int id, String name, BigDecimal price, int stock) {
+    public Product(int id, String name, BigDecimal price, int quantity, int stock) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.quantity = quantity;
         this.stock = stock;
     }
 
@@ -25,6 +27,10 @@ public class Product {
 
     public BigDecimal getPrice() {
         return price;
+    }
+
+    public int getQuantity(){
+        return quantity;
     }
 
     public int getStock() {
