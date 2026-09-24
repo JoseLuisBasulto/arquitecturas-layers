@@ -56,9 +56,12 @@ public class OrderService {
     public Order registerOrder(Order order){
         validateOrder(order);
 
-        processOrderCalculations(order);
-        order.setOrderState(OrderState.PROCESSED);
+        calculateSubtotal(order);
+        calculateDiscount(order);
+        calculateTaxes(order);
+        calculateTotal(order);
 
+        order.setOrderState(OrderState.PROCESSED);
         return orderRepository.save(order);
     }
 
@@ -66,26 +69,32 @@ public class OrderService {
         orderRepository.findAll();
     }
 
-    public void processOrderCalculations(Order order){
-        // Calcular subtotal
+    public void calculateSubtotal(Order order){
         BigDecimal subtotal = BigDecimal.ZERO;
         for(Product product : order.getProductList()){
             BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(product.getQuantity()));
             subtotal = subtotal.add(itemTotal);
         }
         order.setSubtotal(subtotal);
+    }
 
-        // Calcular Descuento
-        if(order.getSubtotal().compareTo(BigDecimal.valueOf(1000)) > 0){
-            order.setDiscount(order.getSubtotal().multiply(BigDecimal.valueOf(0.1)));
+    public void calculateDiscount(Order order){
+        BigDecimal minimumAmount = BigDecimal.valueOf(1000);
+        BigDecimal tenPercent = BigDecimal.valueOf(0.1);
+
+        if(order.getSubtotal().compareTo(minimumAmount) > 0){
+            order.setDiscount(order.getSubtotal().multiply(tenPercent));
         }
+    }
 
-        // Calcular Impuestos
+    public void calculateTaxes(Order order){
+        BigDecimal iva = BigDecimal.valueOf(0.16);
         BigDecimal netAmount = order.getSubtotal().subtract(order.getDiscount());
-        BigDecimal taxes = netAmount.multiply(BigDecimal.valueOf(0.16));
-        order.setTaxes(taxes);
+        order.setTaxes(netAmount.multiply(iva));
+    }
 
-        // Calcular Total
-        order.setTotal(netAmount.add(taxes));
+    public void calculateTotal(Order order){
+        BigDecimal netAmount = order.getSubtotal().subtract(order.getDiscount());
+        order.setTotal(netAmount.add(order.getTaxes()));
     }
 }
