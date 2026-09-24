@@ -13,7 +13,6 @@ public class Order {
     private BigDecimal discount;
     private BigDecimal total;
 
-
     public Order(int id, String customerName, List<Product> productList) {
         this.id = id;
         this.customerName = customerName;
