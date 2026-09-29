@@ -1,13 +1,12 @@
 import business.OrderService;
 import data.OrderRepository;
+import data.OrderRepositoryFile;
 import data.OrderRepositoryMemory;
-import model.OrderState;
 import presentation.MenuUI;
-import presentation.OrderUI;
 
 public class Main {
     public static void main(String[] args) {
-        OrderRepository orderRepository = new OrderRepositoryMemory();
+        OrderRepository orderRepository = new OrderRepositoryFile();
         OrderService service = new OrderService(orderRepository);
         MenuUI menu = new MenuUI(service);
 

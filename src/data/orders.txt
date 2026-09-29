@@ -1,0 +1,23 @@
+ORDER
+1
+Alberto Osorno
+PROCESSED
+750
+0
+120.00
+870.00
+1
+1;Camisa negra basica;250;3;10
+END
+ORDER
+2
+Luis Basulto
+PROCESSED
+1500
+150.0
+216.000
+1566.000
+2
+2;Jeans azules;500;2;10
+1;Camisa negra basica;250;2;10
+END
