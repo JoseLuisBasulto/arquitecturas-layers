@@ -19,13 +19,19 @@ public class OrderRepositoryMemory implements OrderRepository{
     }
 
     @Override
-    public void findAll() {
-        List<Integer> orderedIds = new ArrayList<>(database.keySet());
+    public List<Order> findAll() {
+
+        List<Integer> orderedIds =
+                new ArrayList<>(database.keySet());
 
         Collections.sort(orderedIds);
 
-        for(Integer id : orderedIds){
-            System.out.println(database.get(id));
+        List<Order> orders = new ArrayList<>();
+
+        for(Integer id : orderedIds) {
+            orders.add(database.get(id));
         }
+
+        return orders;
     }
 }
