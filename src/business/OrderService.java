@@ -37,7 +37,7 @@ public class OrderService {
                 throw new IllegalStateException("La cantidad solicitada es mayor a la disponible.");
             }
 
-            if(product.getQuantity() < 0){
+            if(product.getQuantity() <= 0){
                 throw new IllegalArgumentException("La cantidad solicitada de un producto debe ser mayor que 0.");
             }
         }
@@ -65,8 +65,8 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public void listOrders(){
-        orderRepository.findAll();
+    public List<Order> listOrders(){
+        return orderRepository.findAll();
     }
 
     public void calculateSubtotal(Order order){
@@ -82,7 +82,7 @@ public class OrderService {
         BigDecimal minimumAmount = BigDecimal.valueOf(1000);
         BigDecimal tenPercent = BigDecimal.valueOf(0.1);
 
-        if(order.getSubtotal().compareTo(minimumAmount) > 0){
+        if(order.getSubtotal().compareTo(minimumAmount) >= 0){
             order.setDiscount(order.getSubtotal().multiply(tenPercent));
         }
     }

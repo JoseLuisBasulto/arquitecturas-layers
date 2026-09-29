@@ -75,4 +75,38 @@ public class Order {
     public void setTotal(BigDecimal total) {
         this.total = total;
     }
+
+    @Override
+    public String toString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n");
+        sb.append("========================================\n");
+        sb.append("             PEDIDO #").append(id).append("\n");
+        sb.append("========================================\n");
+        sb.append("Cliente     : ").append(customerName).append("\n");
+        sb.append("Estado      : ").append(orderState).append("\n\n");
+
+        sb.append("PRODUCTOS\n");
+        sb.append("----------------------------------------\n");
+
+        for (Product product : productList) {
+            sb.append(String.format(
+                    "%s | Cantidad: %d | Precio: $%.2f%n",
+                    product.getName(),
+                    product.getQuantity(),
+                    product.getPrice().doubleValue()
+            ));
+        }
+
+        sb.append("----------------------------------------\n");
+        sb.append(String.format("Subtotal    : $%.2f%n", subtotal.doubleValue()));
+        sb.append(String.format("Descuento   : $%.2f%n", discount.doubleValue()));
+        sb.append(String.format("Impuestos   : $%.2f%n", taxes.doubleValue()));
+        sb.append(String.format("TOTAL       : $%.2f%n", total.doubleValue()));
+        sb.append("========================================\n");
+
+        return sb.toString();
+    }
 }
